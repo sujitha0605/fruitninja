@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Ninja</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="auth-container" class="auth-container">
+        <h2>Please login</h2>
+        <button id="login-btn" aria-label="Login with Google">Login with Google</button>
+    </div>
+
+    <div id="game-container" class="game-container" style="display: none;">
+        <div id="scoreboard">
+            <p>Score: <span id="score">0</span></p>
+            <p>Missed: <span id="missed">0</span></p>
+            <p>Cut: <span id="cut">0</span></p>
+        </div>
+        <canvas id="gamecanvas" width="800" height="600"></canvas>
+        <audio id="background-music" src="assets/sounds/background.mp3" autoplay loop></audio>
+    </div>
+
+    <div id="game-over" class="game-over" style="display: none;">
+        <p>Game Over</p>
+        <button id="retry-btn" aria-label="Retry the game">Retry</button>
+        <button id="home-btn" aria-label="Go to homepage">Home</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
