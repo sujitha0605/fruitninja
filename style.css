@@ -1,56 +1,87 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  background: black; /* Fallback color for unsupported gradients */
 }
 
-.auth-container, .game-over {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-.game-container {
-    position: relative;
+.hidden {
+  display: none;
 }
 
-#gamecanvas {
-    border: 2px solid black;
-    cursor: crosshair;
+#game-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
 }
 
-#scoreboard {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: white;
-    font-size: 20px;
+#header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  color: white;
+  font-size: 20px;
+}
+
+#game-canvas {
+  display: block;
+  background: linear-gradient(to bottom, #87CEEB, #228B22);
+  margin: 0 auto;
+  width: 100%;
+  height: 100%; /* Ensures the canvas fills the entire screen */
+  box-sizing: border-box; /* Prevents unexpected overflow */
+}
+
+#game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px; /* Rounded corners for better aesthetics */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #ff6600;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 10px;
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px; /* Rounded buttons */
+  background-color: #4CAF50; /* Green button color */
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth effects */
 }
 
 button:hover {
-    background-color: #ff4500;
+  background-color: #45a049; /* Slightly darker green on hover */
+  transform: scale(1.05); /* Slight zoom effect */
 }
 
-#game-over p {
-    font-size: 24px;
-    font-weight: bold;
+button:active {
+  background-color: #3e8e41; /* Darker green on click */
+}
+
+#special-mode {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 0, 0.2); /* Light yellow overlay for special mode */
+  pointer-events: none; /* Allows interaction with game elements underneath */
+  z-index: 5; /* Ensures it overlays the game canvas */
 }

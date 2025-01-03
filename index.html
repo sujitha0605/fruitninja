@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruit Ninja</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruit Ninja</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"></script>
 </head>
 <body>
-    <div id="auth-container" class="auth-container">
-        <h2>Please login</h2>
-        <button id="login-btn" aria-label="Login with Google">Login with Google</button>
-    </div>
+  <!-- Authentication Container -->
+  <div id="auth-container" class="center">
+    <h1>Fruit Ninja</h1>
+    <button id="google-login">Login with Google</button>
+  </div>
 
-    <div id="game-container" class="game-container" style="display: none;">
-        <div id="scoreboard">
-            <p>Score: <span id="score">0</span></p>
-            <p>Missed: <span id="missed">0</span></p>
-            <p>Cut: <span id="cut">0</span></p>
-        </div>
-        <canvas id="gamecanvas" width="800" height="600"></canvas>
-        <audio id="background-music" src="assets/sounds/background.mp3" autoplay loop></audio>
+  <!-- Game Container -->
+  <div id="game-container" class="hidden">
+    <div id="header">
+      <p>Fruits Cut: <span id="fruits-cut">0</span></p>
+      <p>Fruits Missed: <span id="fruits-missed">0</span></p>
     </div>
-
-    <div id="game-over" class="game-over" style="display: none;">
-        <p>Game Over</p>
-        <button id="retry-btn" aria-label="Retry the game">Retry</button>
-        <button id="home-btn" aria-label="Go to homepage">Home</button>
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+    <div id="game-over" class="hidden">
+      <h2>Game Over</h2>
+      <button id="retry">Retry</button>
+      <button id="home">Home</button>
     </div>
+    <button id="sign-out" class="hidden">Logout</button>
+  </div>
 
-    <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
