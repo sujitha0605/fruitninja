@@ -23,14 +23,18 @@ const gameContainer = document.getElementById('game-container');
 const gameCanvas = document.getElementById('game-canvas');
 const gameOverScreen = document.getElementById('game-over');
 const fruitsCutDisplay = document.getElementById('fruits-cut');
-const fruitsMissedDisplay = document.getElementById('fruits-missed');
+const finalScoreDisplay = document.getElementById('final-score');
+const livesContainer = document.getElementById('lives-container');
 const retryButton = document.getElementById('retry');
 const homeButton = document.getElementById('home');
+const bonusTimerContainer = document.getElementById('bonus-timer-container');
+const bonusTimerDisplay = document.getElementById('bonus-timer');
 
 let fruitsCut = 0;
-let fruitsMissed = 0;
+let lives = 3;
 let gameRunning = false;
 let specialMode = false;
+let bonusInterval;
 let fruitObjects = [];
 let mouseX = 0;
 let mouseY = 0;
@@ -59,15 +63,39 @@ gameCanvas.addEventListener('mousemove', (event) => {
   mouseY = event.clientY - rect.top;
 });
 
+function updateLivesDisplay() {
+  if (!livesContainer) return;
+  let heartsHtml = '';
+  for (let i = 0; i < 3; i++) {
+    if (i < lives) {
+      heartsHtml += '<span class="heart">❤️</span>';
+    } else {
+      heartsHtml += '<span class="heart" style="opacity: 0.3;">🖤</span>';
+    }
+  }
+  livesContainer.innerHTML = heartsHtml;
+}
+
+function loseLife() {
+  if (!gameRunning) return;
+  lives--;
+  updateLivesDisplay();
+  if (lives <= 0) {
+    endGame();
+  }
+}
+
 // Start game after Google login
 function startGame() {
   fruitsCut = 0;
-  fruitsMissed = 0;
+  lives = 3;
   specialMode = false;
+  clearInterval(bonusInterval);
+  if(bonusTimerContainer) bonusTimerContainer.classList.add('hidden');
   gameRunning = true;
   fruitObjects = [];
   fruitsCutDisplay.textContent = fruitsCut;
-  fruitsMissedDisplay.textContent = fruitsMissed;
+  updateLivesDisplay();
   gameOverScreen.classList.add('hidden');
   gameContainer.classList.remove('hidden');
   authContainer.classList.add('hidden');
@@ -79,7 +107,9 @@ function startGame() {
 // End the game
 function endGame() {
   gameRunning = false;
+  clearInterval(bonusInterval);
   sounds.background.pause();
+  if (finalScoreDisplay) finalScoreDisplay.textContent = fruitsCut;
   gameOverScreen.classList.remove('hidden');
 }
 
@@ -128,7 +158,7 @@ class Fruit {
     this.speed = speed;
     this.image = new Image();
     this.image.src = `assets/fruits/${type}.png`;
-    const sizeFactor = Math.min(gameCanvas.width, gameCanvas.height) / 20;
+    const sizeFactor = Math.min(gameCanvas.width, gameCanvas.height) / 10; // Increased fruit size
     this.width = sizeFactor;
     this.height = sizeFactor;
     this.isCut = false;
@@ -140,7 +170,12 @@ class Fruit {
 
   draw() {
     if (!this.isCut) {
+      if (this.type === 'specialfruit') {
+        canvas.shadowBlur = 30;
+        canvas.shadowColor = "gold";
+      }
       canvas.drawImage(this.image, this.x, this.y, this.width, this.height);
+      canvas.shadowBlur = 0;
     }
   }
 
@@ -157,8 +192,9 @@ class Fruit {
     ) {
       this.isCut = true;
       if (this.type === 'bomb') {
+        sounds.blast.currentTime = 0;
         sounds.blast.play();
-        endGame();
+        loseLife();
       } else {
         let scoreToAdd = this.points;
         if (specialMode && this.type !== 'specialfruit') scoreToAdd *= 5;
@@ -166,12 +202,26 @@ class Fruit {
         fruitsCutDisplay.textContent = fruitsCut;
 
         if (this.type === 'specialfruit') {
+          sounds.specialfruit.currentTime = 0;
           sounds.specialfruit.play();
           specialMode = true;
 
-          // Activate bonus mode for 10 seconds
-          setTimeout(() => (specialMode = false), 10000);
+          clearInterval(bonusInterval); // reset timer if they cut another special fruit
+          let timeLeft = 10;
+          bonusTimerDisplay.textContent = timeLeft;
+          bonusTimerContainer.classList.remove('hidden');
+
+          bonusInterval = setInterval(() => {
+            timeLeft--;
+            bonusTimerDisplay.textContent = timeLeft;
+            if (timeLeft <= 0) {
+              clearInterval(bonusInterval);
+              specialMode = false;
+              bonusTimerContainer.classList.add('hidden');
+            }
+          }, 1000);
         } else {
+          sounds.slice.currentTime = 0;
           sounds.slice.play();
         }
       }
@@ -185,10 +235,12 @@ function spawnFruit() {
   const type = fruits[Math.floor(Math.random() * fruits.length)];
   const x = Math.random() * (gameCanvas.width - 50);
   const y = -50;
-  const speed = 2 + Math.random() * 3 + fruitsCut / 20; // Speed scales with fruitsCut
+  // Speed increases very slowly: +1 speed every 500 score points
+  const speed = 1.5 + Math.random() * 2 + (fruitsCut / 500); 
   fruitObjects.push(new Fruit(type, x, y, speed));
 
-  setTimeout(spawnFruit, 1000 - Math.min(fruitsCut * 10, 500)); // Decrease spawn interval with score
+  // Spawn interval decreases very slowly: -1ms every 2 score points, maxing out at 600ms faster
+  setTimeout(spawnFruit, 1000 - Math.min(fruitsCut * 0.5, 600));
 }
 
 // Game Loop and Logic
@@ -209,10 +261,8 @@ function gameLoop() {
 
     // Remove fruits that go off-screen or are cut
     if (fruit.y > gameCanvas.height || fruit.isCut) {
-      if (!fruit.isCut && fruit.type !== 'bomb') {
-        fruitsMissed++;
-        fruitsMissedDisplay.textContent = fruitsMissed;
-        if (fruitsMissed >= 3) endGame();
+      if (!fruit.isCut && fruit.type !== 'bomb' && fruit.type !== 'specialfruit') {
+        loseLife();
       }
       fruitObjects.splice(index, 1);
     }

@@ -18,12 +18,18 @@
   <!-- Game Container -->
   <div id="game-container" class="hidden">
     <div id="header">
-      <p>Fruits Cut: <span id="fruits-cut">0</span></p>
-      <p>Fruits Missed: <span id="fruits-missed">0</span></p>
+      <p>Score: <span id="fruits-cut">0</span></p>
+      <p id="lives-container" style="font-size: 1.5rem; margin: 5px 0;">
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+      </p>
+      <p id="bonus-timer-container" class="hidden" style="color: gold; font-weight: bold;">Bonus Time: <span id="bonus-timer">10</span>s</p>
     </div>
     <canvas id="game-canvas" width="800" height="600"></canvas>
     <div id="game-over" class="hidden">
       <h2>Game Over</h2>
+      <p>Final Score: <span id="final-score">0</span></p>
       <button id="retry">Retry</button>
       <button id="home">Home</button>
     </div>
